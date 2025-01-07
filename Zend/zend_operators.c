@@ -1409,6 +1409,27 @@ ZEND_API zend_result ZEND_FASTCALL in_function(zval *result, zval *op1, zval *op
 				);
 			ZVAL_BOOL(result, found != NULL);
 		}
+	}else if (Z_TYPE_P(op2) == IS_ARRAY) {
+		HashPosition pos;
+		zval *value;
+
+		/* Start under the assumption that the value isn't contained */
+		ZVAL_FALSE(result);
+
+		/* Iterate through the array */
+		zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(op2), &pos);
+		while ((value = zend_hash_get_current_data_ex(Z_ARRVAL_P(op2), &pos)) != SUCCESS) {
+			/* Compare values using == */
+			if (is_equal_function(result, op1, value) == SUCCESS && Z_LVAL_P(result)) {
+				break;
+			}
+
+			zend_hash_move_forward_ex(Z_ARRVAL_P(op2), &pos);
+		}
+
+	}else{
+		zend_error(E_WARNING, "Right operand of in has to be either string or array");
+		ZVAL_FALSE(result);
 	}
 
 	return FAILURE;
