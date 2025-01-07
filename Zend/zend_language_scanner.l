@@ -1382,6 +1382,10 @@ OPTIONAL_WHITESPACE_OR_COMMENTS ({WHITESPACE}|{MULTI_LINE_COMMENT}|{SINGLE_LINE_
 /* compute yyleng before each rule */
 <!*> := yyleng = YYCURSOR - SCNG(yy_text);
 
+<ST_IN_SCRIPTING>"in" {
+    return T_IN;
+}
+
 <ST_IN_SCRIPTING>"exit" {
 	RETURN_TOKEN_WITH_IDENT(T_EXIT);
 }

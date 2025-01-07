@@ -1389,6 +1389,32 @@ ZEND_API zend_result ZEND_FASTCALL pow_function(zval *result, zval *op1, zval *o
 }
 /* }}} */
 
+ZEND_API zend_result ZEND_FASTCALL in_function(zval *result, zval *op1, zval *op2) /* {{{ */
+{
+	ZVAL_DEREF(op1);
+	ZVAL_DEREF(op2);
+
+	ZEND_TRY_BINARY_OBJECT_OPERATION(ZEND_IN);
+
+	if (Z_TYPE_P(op2) == IS_STRING)
+	{
+		if(Z_STRLEN_P(op1) == 0)
+		{
+			ZVAL_TRUE(result);
+		}else{
+			const char *found =zend_memnstr(Z_STRVAL_P(op2),                  /* haystack */
+				Z_STRVAL_P(op1),                  /* needle */
+				Z_STRLEN_P(op1),                  /* needle length */
+				Z_STRVAL_P(op2) + Z_STRLEN_P(op2) /* haystack end ptr */
+				);
+			ZVAL_BOOL(result, found != NULL);
+		}
+	}
+
+	return FAILURE;
+}
+/* }}} */
+
 /* Returns SUCCESS/TYPES_NOT_HANDLED/DIV_BY_ZERO */
 #define TYPES_NOT_HANDLED 1
 #define DIV_BY_ZERO 2
